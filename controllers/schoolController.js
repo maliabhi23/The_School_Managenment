@@ -1,3 +1,28 @@
+// ✅ db.js (CommonJS style, using private Railway connection)
+const mysql = require('mysql2');
+const dotenv = require('dotenv');
+dotenv.config();
+
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  connectTimeout: 10000,
+});
+
+db.connect((err) => {
+  if (err) {
+    console.error('❌ MySQL connection failed:', err.message);
+  } else {
+    console.log('✅ Connected to Railway MySQL');
+  }
+});
+
+module.exports = db;
+
+// ✅ controllers/schoolController.js
 const db = require('../db');
 
 // Calculate distance using haversine formula
@@ -51,3 +76,29 @@ exports.listSchools = (req, res) => {
     res.json(sorted);
   });
 };
+
+// ✅ routes/schoolRoutes.js
+const express = require('express');
+const router = express.Router();
+const schoolController = require('../controllers/schoolController');
+
+router.post('/addSchool', schoolController.addSchool);
+router.get('/listSchools', schoolController.listSchools);
+
+module.exports = router;
+
+// ✅ server.js
+const express = require('express');
+const dotenv = require('dotenv');
+const schoolRoutes = require('./routes/schoolRoutes');
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use('/', schoolRoutes);
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+});
