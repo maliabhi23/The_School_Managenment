@@ -1,4 +1,7 @@
 // ✅ db.js (CommonJS style, using private Railway connection)
+// ✅ controllers/schoolController.js
+const db = require('../db');
+
 const mysql = require('mysql2');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -22,8 +25,6 @@ db.connect((err) => {
 
 module.exports = db;
 
-// ✅ controllers/schoolController.js
-const db = require('../db');
 
 // Calculate distance using haversine formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
